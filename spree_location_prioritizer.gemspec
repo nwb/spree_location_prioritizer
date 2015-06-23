@@ -2,21 +2,22 @@
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'spree_location_prioritizer'
-  s.version     = '2.3.4'
-  s.summary     = 'TODO: Add gem summary here'
-  s.description = 'TODO: Add (optional) gem description here'
+  s.version     = '3.0.0'
+  s.summary     = 'sort the packages with stock location priority settings'
+  s.description = 'for multi-warehouse stores, we need set the closest/cheapest stock location for the shipment. this extension will do it with stock location settings.'
   s.required_ruby_version = '>= 1.9.3'
 
   s.author    = 'Albert Liu'
   s.email     = 'albertliu@naturalwellbeing.com'
   s.homepage  = 'http://www.naturalwellbeing.com'
 
-  #s.files       = `git ls-files`.split("\n")
-  #s.test_files  = `git ls-files -- {test,spec,features}/*`.split("\n")
+  s.files       = `git ls-files`.split("\n")
+  s.test_files  = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.require_path = 'lib'
   s.requirements << 'none'
 
-  s.add_dependency 'spree_core', '~> 2.3.4'
+  version = '~> 3-0-stable'
+  s.add_dependency 'spree_core'
 
   s.add_development_dependency 'capybara', '~> 2.4'
   s.add_development_dependency 'coffee-rails'

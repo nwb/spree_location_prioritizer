@@ -1,10 +1,13 @@
 SpreeLocationPrioritizer
 =============
 
-Spree 2.3 has the priotitizer to sort the package capability but not implemented.
+Spree 3.0 has the priotitizer to sort the package capability but not implemented.
 This gem/extenstion assume every stock location has its own serving countries and priorities.
 Example, stock location with priorities as {"ca" => 1, "all" => 0, "us" => 10000} , and location with prioties as {"ca" => 10000}
 The second location should serve Canadian customers when possible.
+
+The coordinator will put all items into one package and ship from one warehouse. It will will not check the on_hand_count. If you want remove one item away from one stock location,
+delete it from the item location lists, not just set the on_hand_count to 0.
 
 Installation
 ------------
