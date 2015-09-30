@@ -10,11 +10,32 @@ module Spree
         # p=[de,nwb]
         # p.sort!{|t,y| y[o["country"]]<=>t[o["country"]]}  # t y sequence reversed here  p
         address= inventory_units.first.order.ship_address || inventory_units.first.order.billing_address
-        packages.sort!{|f,s| (JSON.parse(s.stock_location.priorities)[address.country.iso.downcase] || JSON.parse(s.stock_location.priorities)["all"] || 0) <=> (JSON.parse(f.stock_location.priorities)[address.country.iso.downcase]  || JSON.parse(f.stock_location.priorities)["all"] || 0)}
+
+        packages.sort!{|f,s| (JSON.parse(s.stock_location.priorities)[address.country.iso.downcase].to_i || JSON.parse(s.stock_location.priorities)["all"].to_i || 0) <=> (JSON.parse(f.stock_location.priorities)[address.country.iso.downcase].to_i  || JSON.parse(f.stock_location.priorities)["all"].to_i || 0)}.reverse!
 
         Rails.logger.info("packages after sort: #{packages.length} at locations of #{packages.map(&:stock_location).inspect}")
         packages
       end
+
+      def adjust_packages
+        inventory_units.each do |inventory_unit|
+
+          adjuster = @adjuster_class.new(inventory_unit, :on_hand)
+
+          visit_packages(adjuster)
+          # we do not adjust it by status, so they all will be shipped by one stock_location/warehouse
+          #adjuster.status = :backordered
+          #visit_packages(adjuster)
+        end
+      end
+
+      def visit_packages(adjuster)
+        packages.each do |package|
+          item = package.find_item adjuster.inventory_unit
+          adjuster.adjust(package) if item
+        end
+      end
+
     end
   end
 end

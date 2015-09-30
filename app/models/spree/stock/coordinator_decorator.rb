@@ -13,7 +13,7 @@ module Spree
       # we drop the package who does not cover all inventories
       def build_packages(packages = Array.new)
         StockLocation.active.each do |stock_location|
-          next unless stock_location.stock_items.where(:variant_id => inventory_units.map(&:variant_id).uniq).exists?
+          #next unless stock_location.stock_items.where(:variant_id => inventory_units.map(&:variant_id).uniq).exists?
           # skip the warehouse we can not fulfill the order as one package.
           # this need we have one primary warehouse can ship them all.
 
