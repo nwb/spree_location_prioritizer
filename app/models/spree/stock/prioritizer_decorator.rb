@@ -11,7 +11,7 @@ module Spree
         # p.sort!{|t,y| y[o["country"]]<=>t[o["country"]]}  # t y sequence reversed here  p
         address= inventory_units.first.order.ship_address || inventory_units.first.order.billing_address
 
-        packages.sort!{|f,s| (JSON.parse(s.stock_location.priorities)[address.country.iso.downcase].to_i || JSON.parse(s.stock_location.priorities)["all"].to_i || 0) <=> (JSON.parse(f.stock_location.priorities)[address.country.iso.downcase].to_i  || JSON.parse(f.stock_location.priorities)["all"].to_i || 0)}.reverse!
+        packages.sort!{|f,s| (JSON.parse(s.stock_location.priorities)[address.country.iso.downcase] || JSON.parse(s.stock_location.priorities)["all"] || 0).to_i <=> (JSON.parse(f.stock_location.priorities)[address.country.iso.downcase]  || JSON.parse(f.stock_location.priorities)["all"] || 0).to_i}
 
         Rails.logger.info("packages after sort: #{packages.length} at locations of #{packages.map(&:stock_location).inspect}")
         packages
