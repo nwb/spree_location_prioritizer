@@ -11,10 +11,10 @@ module Spree
         # p.sort!{|t,y| y[o["country"]]<=>t[o["country"]]}  # t y sequence reversed here  p
         return packages unless inventory_units.length>0
         address= inventory_units.first.order.ship_address || inventory_units.first.order.billing_address
-
+        if !!address
         packages.sort!{|f,s| (JSON.parse(s.stock_location.priorities)[address.country.iso.downcase] || JSON.parse(s.stock_location.priorities)["all"] || 0).to_i <=> (JSON.parse(f.stock_location.priorities)[address.country.iso.downcase]  || JSON.parse(f.stock_location.priorities)["all"] || 0).to_i}
-
-        Rails.logger.info("packages after sort: #{packages.length} at locations of #{packages.map(&:stock_location).inspect}")
+        end
+        Rails.logger.debug("packages after sort: #{packages.length} at locations of #{packages.map(&:stock_location).inspect}")
         packages
       end
 
