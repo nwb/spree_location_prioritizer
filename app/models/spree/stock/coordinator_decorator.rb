@@ -18,9 +18,9 @@ module Spree
           # this need we have one primary warehouse can ship them all.
           if inventory_units.length>0
           address= inventory_units.first.order.ship_address || inventory_units.first.order.billing_address
-          if !!address
+          #if !!address
           next if !(JSON.parse(stock_location.priorities)[address.country.iso.downcase] || JSON.parse(stock_location.priorities)["all"])
-          end
+          #end
           next unless stock_location.stock_items.where(:variant_id => inventory_units.map(&:variant_id).uniq).length == inventory_units.map(&:variant_id).uniq.length
           packer = build_packer(stock_location, inventory_units)
           packages += packer.packages
