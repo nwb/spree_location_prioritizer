@@ -25,7 +25,7 @@ module Spree
           end
           next if !(JSON.parse(stock_location.priorities)[country.iso.downcase] || JSON.parse(stock_location.priorities)["all"])
           #end
-          next unless stock_location.stock_items.where(:variant_id => inventory_units.map(&:variant_id).uniq).length == inventory_units.map(&:variant_id).uniq.length
+          next unless stock_location.stock_items.where(:variant_id => inventory_units.map(&:variant_id).uniq).select{|si| si.available?}.length == inventory_units.map(&:variant_id).uniq.length
           packer = build_packer(stock_location, inventory_units)
           packages += packer.packages
           end
