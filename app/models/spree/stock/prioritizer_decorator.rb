@@ -9,8 +9,8 @@ module Spree
         # nwb={"ca" => 10000}             in string "{\"gb\":10000}"
         # p=[de,nwb]
         # p.sort!{|t,y| y[o["country"]]<=>t[o["country"]]}  # t y sequence reversed here  p
-        return packages unless inventory_units.length>0
-        address= inventory_units.first.order.ship_address || inventory_units.first.order.billing_address
+        return packages unless packages.first.contents.length>0
+        address= packages.first.contents.first.inventory_unit.order.ship_address || packages.first.contents.first.inventory_unit.order.billing_address
         #if !!address
         if !!address
           country=address.country
@@ -21,26 +21,6 @@ module Spree
         #end
         Rails.logger.debug("packages after sort: #{packages.length} at locations of #{packages.map(&:stock_location).inspect}")
         packages
-      end
-
-      def adjust_packages
-        return unless inventory_units.length>0
-        inventory_units.each do |inventory_unit|
-
-          adjuster = @adjuster_class.new(inventory_unit, :on_hand)
-
-          visit_packages(adjuster)
-          # we do not adjust it by status, so they all will be shipped by one stock_location/warehouse
-          #adjuster.status = :backordered
-          #visit_packages(adjuster)
-        end
-      end
-
-      def visit_packages(adjuster)
-        packages.each do |package|
-          item = package.find_item adjuster.inventory_unit
-          adjuster.adjust(package) if item
-        end
       end
 
     end
