@@ -12,23 +12,26 @@ module Spree
       # Returns an array of Package instances
       # we drop the package who does not cover all inventories
       def build_packages(packages = Array.new)
-        stock_locations_with_requested_variants.each do |stock_location|
-          #next unless stock_location.stock_items.where(:variant_id => inventory_units.map(&:variant_id).uniq).exists?
-          # skip the warehouse we can not fulfill the order as one package.
-          # this need we have one primary warehouse can ship them all.
-          if inventory_units.length>0
+        if inventory_units.length>0
           address= inventory_units.first.order.ship_address || inventory_units.first.order.billing_address
           if !!address
             country=address.country
           else
             country= Spree::Country.find(Spree::Config[:default_country_id]) rescue Spree::Country.first
           end
+        stock_locations_with_requested_variants.each do |stock_location|
+          #next unless stock_location.stock_items.where(:variant_id => inventory_units.map(&:variant_id).uniq).exists?
+          # skip the warehouse we can not fulfill the order as one package.
+          # this need we have one primary warehouse can ship them all.
+
           next if !(JSON.parse(stock_location.priorities)[country.iso.downcase] || JSON.parse(stock_location.priorities)["all"])
           #end
           next unless stock_location.stock_items.where(:variant_id => inventory_units.map(&:variant_id).uniq).select{|si| si.available?}.length == inventory_units.map(&:variant_id).uniq.length
           packer = build_packer(stock_location, inventory_units)
           packages += packer.packages
-          end
+
+        end
+        packages.sort!{|f,s| (JSON.parse(s.stock_location.priorities)[country.iso.downcase] || JSON.parse(s.stock_location.priorities)["all"] || 0).to_i <=> (JSON.parse(f.stock_location.priorities)[country.iso.downcase]  || JSON.parse(f.stock_location.priorities)["all"] || 0).to_i}
         end
         packages
       end
