@@ -11,7 +11,11 @@ Spree::Stock::Packer.class_eval do
       if variant.should_track_inventory?
         next unless stock_location.stocks? variant
         on_hand, backordered = stock_location.fill_status(variant, unit.quantity)
-        package.add(unit, :backordered) if backordered.positive?
+        if backordered.positive?
+          package.add(unit, :backordered)
+        else
+          package.add unit
+        end
         #package.add(Spree::InventoryUnit.split(unit, on_hand), :on_hand) if on_hand.positive?
       else
         package.add unit
